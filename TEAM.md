@@ -11,7 +11,7 @@
 
 | STT | Họ tên | MSSV | Email | GitHub | Vai trò |
 | --: | ------ | ---- | ----- | ------ | ------- |
-|   1 |        |      |       |        |         |
+|   1 | Lê Tuấn Đạt | 2A202603949 | letuandat.cv@gmail.com | letuandat131 | Benchmark, verification tests (`test_team_verification.py`), ADR & báo cáo |
 |   2 |        |      |       |        |         |
 
 Gợi ý chia vai:
@@ -25,7 +25,7 @@ Gợi ý chia vai:
 
 | Người | Vai | Commit | Test đã thêm hoặc sửa |
 | --- | --- | --- | --- |
-| | | | |
+| Lê Tuấn Đạt (`2A202603949`) | Benchmark CP5, verification tests, ADR & báo cáo | (chờ commit) | `src/tests/test_team_verification.py` (12 cases: delay < 3d, superseded policy, prompt injection, idempotency) |
 
 ## Cá nhân
 
