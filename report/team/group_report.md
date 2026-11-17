@@ -3,7 +3,7 @@
 ## 1. Thông tin nhóm
 
 - Tên nhóm: FreeFire
-- Lớp: L3A
+- Lớp: L3B
 - Repo: `K5-L3b-DAY08-FreeFire-FromWorkflowsToAgents`
 - URL repo: `https://github.com/vietahnn/K5-L3b-DAY08-FreeFire-FromWorkflowsToAgents.git`, nhánh `main`
 - Thành viên: xem `TEAM.md`
