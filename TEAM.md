@@ -14,6 +14,7 @@
 |   1 | Lê Tuấn Đạt | 2A202603949 | letuandat.cv@gmail.com | letuandat131 | Benchmark, verification tests (`test_team_verification.py`), ADR & báo cáo |
 |   2 | Vũ Huy Hiệu | 2A202603979 | hieuvippro531@gmail.com | hieunhangia | Triển khai Shape A (Workflow), Shape B (Single Agent), ReAct loop & Trace contract |
 |   3 | Nguyễn Quang Tiệp | 2A202603946 | tiepquangnguyen175@gmail.com | nguyenquangtiep | CP4: crash suite 20/20 (`src/reports/crash.json`), rà approval gate & secret/PII |
+|   4 | Đỗ Việt Anh | 2A202603973 | dovietanh240405@gmail.com | vietahnn | CP3: Durability, idempotency & crash handling trên 3 shape, xử lý InjectedCrash & trace |
 
 Gợi ý chia vai:
 
@@ -29,6 +30,7 @@ Gợi ý chia vai:
 | Lê Tuấn Đạt (`2A202603949`) | Benchmark CP5, verification tests, ADR & báo cáo | `32f7e07` | `src/tests/test_team_verification.py` (12 cases: delay < 3d, superseded policy, prompt injection, idempotency) |
 | Vũ Huy Hiệu (`2A202603979`) | Triển khai Shape A (Workflow) & Shape B (Single Agent), ReAct runtime & Trace contract | `809c0ff` | `tests/test_public_matrix.py` (62 cases workflow & 62 cases single agent) |
 | Nguyễn Quang Tiệp (`2A202603946`) | CP4: crash suite, approval gate, secret/PII | `e2d0c9b` | <bổ sung tên test sau khi commit> |
+| Đỗ Việt Anh (`2A202603973`) | CP3: Durability, idempotency & crash handling trên 3 shape (`workflow`, `single`, `orchestrator`) | `4eb8dc8` | `tests/test_public_matrix.py` (T11 retry idempotency, T12 crash before checkpoint) & `tests/test_refund_idempotency.py` |
 
 ## Cá nhân
 
@@ -105,3 +107,27 @@ Sao chép mục dưới đây cho từng thành viên.
 - Commit: `e2d0c9b` (`add checkpoint 4`).
 - `src/reports/crash.json`: `"crash_safety": "20/20"`.
 - `python -m pytest -q -m student -o addopts=` (`248 passed`).
+
+## 2A202603973_DoVietAnh
+
+### Phần việc phụ trách
+
+- Checkpoint 3 (CP3): Cơ chế Độ bền vững (Durability), Tính bất biến khi thực hiện lại (Idempotency) và Xử lý lỗi crash trên cả ba shape (`workflow`, `single`, `orchestrator`).
+- Truyền `crash_at` vào `durability.issue_refund`, không nuốt ngoại lệ `InjectedCrash` (bắt lỗi để ghi event crash vào trace, flush trace ra đĩa rồi re-raise để test/host phát hiện).
+- Đảm bảo an toàn sổ cái (ledger idempotency key `refund:{claim_id}`) và khả năng phục hồi khi hệ thống gặp sự cố giữa chừng.
+
+### Đóng góp cụ thể
+
+- Hoàn thiện `src/lab8/shapes/workflow.py`, `src/lab8/shapes/single.py`, `src/lab8/shapes/orchestrator.py`:
+  - Thêm tham số `crash_at: str | None = None` vào `run_claim` và `_run`.
+  - Chuyển tiếp `crash_at` trực tiếp vào `durability.issue_refund(conn, claim_id, proposal, crash_at=crash_at)`.
+  - Bắt `InjectedCrash`: ghi sự kiện crash vào trace bằng `trace.add("crash", {"at": crash_at})`, flush trace ra đĩa với `trace.write()`, rồi `raise` lại exception để test T12 thấy crash thật mà grader vẫn có trace hợp lệ.
+- Kiểm thử xác minh T11 và T12 trên cả ba shape trong ma trận student `tests/test_public_matrix.py` và bộ kiểm thử độ bền `tests/test_refund_idempotency.py`.
+- Commit kỹ thuật chính: `4eb8dc8` (`implement cp3`).
+- Báo cáo cá nhân: `report/team/2A202603973_DoVietAnh.md`.
+
+### Bằng chứng
+
+- Commit: `4eb8dc8` (`implement cp3`).
+- Test xanh: `python -m pytest -q -m student -o addopts= -k "test_t11 or test_t12"` (passed trên cả 3 shape).
+- Đảm bảo tiền đề vững chắc cho crash safety `20/20` ở CP4 (`src/reports/crash.json`).
