@@ -32,7 +32,7 @@ from __future__ import annotations
 import sqlite3
 
 from lab8.db import connect
-from lab8.durability import issue_refund
+from lab8.durability import InjectedCrash, issue_refund
 from lab8.mock_llm import complete
 from lab8.schemas import Budget, RunResult, make_run_id
 from lab8.shapes.common import finish
@@ -47,11 +47,9 @@ def run_claim(
     store_path: str,
     crash_at: str | None = None,
 ) -> RunResult:
-    # TODO CP3 (student): truyền crash_at vào durability.issue_refund, không bắt InjectedCrash.
-    del crash_at
     conn = connect(store_path)
     try:
-        return _run(conn, claim_id, seed=seed)
+        return _run(conn, claim_id, seed=seed, crash_at=crash_at)
     finally:
         conn.close()
 
@@ -61,6 +59,7 @@ def _run(
     claim_id: str,
     *,
     seed: int,
+    crash_at: str | None,
 ) -> RunResult:
     budget = Budget()
     run_id = make_run_id("workflow", claim_id, seed)
@@ -136,7 +135,12 @@ def _run(
             error_reason=quote_payload.get("reason"),
         )
 
-    outcome = issue_refund(conn, claim_id, proposal)
+    try:
+        outcome = issue_refund(conn, claim_id, proposal, crash_at=crash_at)
+    except InjectedCrash:
+        trace.add("crash", {"at": crash_at})
+        trace.write()
+        raise
 
     if not outcome["ok"]:
         status = "failed" if outcome["conflict"] else "denied"
