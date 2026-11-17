@@ -25,7 +25,7 @@ Gợi ý chia vai:
 
 | Người | Vai | Commit | Test đã thêm hoặc sửa |
 | --- | --- | --- | --- |
-| Lê Tuấn Đạt (`2A202603949`) | Benchmark CP5, verification tests, ADR & báo cáo | (chờ commit) | `src/tests/test_team_verification.py` (12 cases: delay < 3d, superseded policy, prompt injection, idempotency) |
+| Lê Tuấn Đạt (`2A202603949`) | Benchmark CP5, verification tests, ADR & báo cáo | `32f7e07` | `src/tests/test_team_verification.py` (12 cases: delay < 3d, superseded policy, prompt injection, idempotency) |
 
 ## Cá nhân
 
