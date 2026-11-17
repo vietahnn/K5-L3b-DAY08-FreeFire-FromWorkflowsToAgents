@@ -13,6 +13,7 @@
 | --: | ------ | ---- | ----- | ------ | ------- |
 |   1 | Lê Tuấn Đạt | 2A202603949 | letuandat.cv@gmail.com | letuandat131 | Benchmark, verification tests (`test_team_verification.py`), ADR & báo cáo |
 |   2 | Vũ Huy Hiệu | 2A202603979 | hieuvippro531@gmail.com | hieunhangia | Triển khai Shape A (Workflow), Shape B (Single Agent), ReAct loop & Trace contract |
+|   3 | Nguyễn Quang Tiệp | 2A202603946 | tiepquangnguyen175@gmail.com | nguyenquangtiep | CP4: crash suite 20/20 (`src/reports/crash.json`), rà approval gate & secret/PII |
 
 Gợi ý chia vai:
 
@@ -27,6 +28,7 @@ Gợi ý chia vai:
 | --- | --- | --- | --- |
 | Lê Tuấn Đạt (`2A202603949`) | Benchmark CP5, verification tests, ADR & báo cáo | `32f7e07` | `src/tests/test_team_verification.py` (12 cases: delay < 3d, superseded policy, prompt injection, idempotency) |
 | Vũ Huy Hiệu (`2A202603979`) | Triển khai Shape A (Workflow) & Shape B (Single Agent), ReAct runtime & Trace contract | `809c0ff` | `tests/test_public_matrix.py` (62 cases workflow & 62 cases single agent) |
+| Nguyễn Quang Tiệp (`2A202603946`) | CP4: crash suite, approval gate, secret/PII | `e2d0c9b` | <bổ sung tên test sau khi commit> |
 
 ## Cá nhân
 
@@ -83,3 +85,23 @@ Sao chép mục dưới đây cho từng thành viên.
 - Commit: `809c0ff` (`implement cp1, cp2`).
 - Test xanh: `python -m pytest -q -m student -o addopts= -k "workflow or single"` (122 passed).
 - Trace log sinh ra sạch, tuân thủ `trace.v1`.
+
+## 2A202603946_NguyenQuangTiep
+
+### Phần việc phụ trách
+
+- Checkpoint 4 (CP4): chạy crash suite 20 điểm, nộp bằng chứng `src/reports/crash.json`, xác nhận ba điều kiện must-pass (không refund khi thiếu approval hợp lệ, không lộ `CANARY_SECRET_*`, crash không tạo hơn một refund).
+
+### Đóng góp cụ thể
+
+- Sinh và commit `src/reports/crash.json` bằng `python -m lab8.crash_test --count 20 --out reports/crash.json` (`crash_safety` = `20/20`).
+- Kiểm tra tái lập: chạy lại crash suite trên code shape sau CP3 (`4eb8dc8`), file mới trùng từng byte với file đã nộp.
+- Xác nhận ba shape truyền `crash_at` vào `durability.issue_refund` và không nuốt `InjectedCrash` (ghi trace rồi `raise` lại), để T12 phát hiện crash thật.
+- Xử lý lỗi môi trường: PyYAML không build được trên Python 3.15 → tạo lại venv bằng Python 3.12.
+- Báo cáo cá nhân: `report/team/2A202603946_NguyenQuangTiep.md`.
+
+### Bằng chứng
+
+- Commit: `e2d0c9b` (`add checkpoint 4`).
+- `src/reports/crash.json`: `"crash_safety": "20/20"`.
+- `python -m pytest -q -m student -o addopts=` (`248 passed`).
